@@ -1,8 +1,11 @@
 package com.intelliJ.web;
 
+import antlr.build.Tool;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intelliJ.domain.posts.Posts;
 import com.intelliJ.domain.posts.PostsRepository;
 import com.intelliJ.web.dto.PostsSaveRequestDto;
+import com.intelliJ.web.dto.PostsUpdateRequestDto;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -63,16 +64,19 @@ public class PostsApiControllerTest {
         .content("content").author("author").build());
 
         Long updateId = savedPosts.getId();
-        String expectedTitle = "title2";
-        String expectedContent = "content2";
+        String expectedTitle = "title1";
+        String expectedContent = "content1";
 
-        PostsUpdateRequestDto requestDto = postsUpdateRequestDto.builder()
+        PostsUpdateRequestDto requestDto = PostsUpdateRequestDto.builder()
                 .title(expectedContent)
                 .content(expectedContent)
                 .build();
         String url = "http://localhost:" + port + "/api/v1/posts/" + updateId;
+
         HttpEntity<PostsUpdateRequestDto> requestEntity = new HttpEntity<>(requestDto);
 
+        ResponseEntity<Long> responseEntity = restTemplate.exchange(url, HttpMethod.PUT,
+                requestEntity, Long.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isGreaterThan(0L);
 

@@ -1,7 +1,9 @@
 package com.intelliJ.web;
 
 import com.intelliJ.service.PostsService;
+import com.intelliJ.web.dto.PostsResponseDto;
 import com.intelliJ.web.dto.PostsSaveRequestDto;
+import com.intelliJ.web.dto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +20,9 @@ public class PostsApiController {
         return postsService.save(requestDto);
     }
 
-    @PostMapping("/api/v1/posts/{id}")
+    @PutMapping("/api/v1/posts/{id}")
     public Long update(@PathVariable Long id, @RequestBody
-    PostsUpdateRequestDto requestDto) {
+            PostsUpdateRequestDto requestDto) {
         return postsService.update(id, requestDto);
     }
 
