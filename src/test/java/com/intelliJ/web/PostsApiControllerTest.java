@@ -1,12 +1,12 @@
 package com.intelliJ.web;
 
-import antlr.build.Tool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intelliJ.domain.posts.Posts;
 import com.intelliJ.domain.posts.PostsRepository;
 import com.intelliJ.web.dto.PostsSaveRequestDto;
 import com.intelliJ.web.dto.PostsUpdateRequestDto;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,15 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @RunWith(SpringRunner.class)
@@ -33,6 +38,11 @@ public class PostsApiControllerTest {
 
     @Autowired
     private PostsRepository postsRepository;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mvc;
 
     @After
     public void tearDown() throws Exception {
@@ -73,12 +83,10 @@ public class PostsApiControllerTest {
                 .build();
         String url = "http://localhost:" + port + "/api/v1/posts/" + updateId;
 
-        HttpEntity<PostsUpdateRequestDto> requestEntity = new HttpEntity<>(requestDto);
-
-        ResponseEntity<Long> responseEntity = restTemplate.exchange(url, HttpMethod.PUT,
-                requestEntity, Long.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isGreaterThan(0L);
+        mvc.perform(put(url)
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
 
         List<Posts> all = postsRepository.findAll();
         assertThat(all.get(0).getTitle()).isEqualTo(expectedTitle);
