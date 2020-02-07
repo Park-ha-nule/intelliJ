@@ -44,6 +44,14 @@ public class PostsApiControllerTest {
 
     private MockMvc mvc;
 
+
+    @Before
+    public void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
     @After
     public void tearDown() throws Exception {
         postsRepository.deleteAll();
