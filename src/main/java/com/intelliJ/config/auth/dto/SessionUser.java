@@ -1,5 +1,6 @@
 package com.intelliJ.config.auth.dto;
 
+import com.intelliJ.domain.posts.user.User;
 import lombok.Getter;
 
 import java.io.Serializable;
