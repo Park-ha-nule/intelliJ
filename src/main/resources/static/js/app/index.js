@@ -9,7 +9,7 @@ var index = {
         });
         $('#btn-delete').on('click', function() {
             _this.delete();
-        })
+        });
     },
     save : function() {
         var data = {
